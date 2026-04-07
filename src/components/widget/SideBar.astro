@@ -8,13 +8,15 @@ interface Props {
 	class?: string;
 	headings?: MarkdownHeading[];
 	home?: boolean;
+	showProfile?: boolean;
 }
 
 const className = Astro.props.class;
 const home = Astro.props.home ?? false;
+const showProfile = Astro.props.showProfile ?? !home;
 ---
 <div id="sidebar" class:list={[className, "w-full"]}>
-    {!home && (
+    {showProfile && (
         <div class="flex flex-col w-full gap-4 mb-4">
             <Profile></Profile>
         </div>

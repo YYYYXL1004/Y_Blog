@@ -38,15 +38,15 @@ const hasBannerLink = !!siteConfig.banner.credit.url;
 
 const mainPanelTop = siteConfig.banner.enable
 	? `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`
-	: "5.5rem";
+	: "7.5rem";
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
 
 <!-- Navbar -->
 <slot slot="head" name="head"></slot>
-<div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto" class:list={[""]}>
-    <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all">
+<div id="top-row" class="pointer-events-none fixed inset-x-0 top-0 z-50">
+    <div id="navbar-wrapper" class="pointer-events-auto mx-auto max-w-[var(--page-width)] px-4 pt-4 transition-all md:px-6 md:pt-6">
         <Navbar></Navbar>
     </div>
 </div>
@@ -62,38 +62,39 @@ const mainPanelTop = siteConfig.banner.enable
 <!-- Main content -->
 <div class="absolute w-full z-30 pointer-events-none" style={`top: ${mainPanelTop}`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
-    <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
-        <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
-    mx-auto gap-4 px-0 md:px-4"
-        >
+    <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto px-4 md:px-6">
             <!-- Banner image credit -->
             {hasBannerCredit && <a href={siteConfig.banner.credit.url} id="banner-credit" target="_blank" rel="noopener" aria-label="Visit image source"
-                                   class:list={["group onload-animation transition-all absolute flex justify-center items-center rounded-full " +
-                                   "px-3 right-4 -top-[3.25rem] bg-black/60 hover:bg-black/70 h-9", {"hover:pr-9 active:bg-black/80": hasBannerLink}]}
+                                   class:list={["surface-pill group onload-animation transition-all absolute flex justify-center items-center text-[var(--shell-text-soft)] " +
+                                   "px-3 right-4 -top-[3.25rem] h-9", {"hover:pr-9": hasBannerLink}]}
             >
-                <Icon class="text-white/75 text-[1.25rem] mr-1" name="material-symbols:copyright-outline-rounded" ></Icon>
-                <div class="text-white/75 text-xs">{siteConfig.banner.credit.text}</div>
+                <Icon class="text-[var(--shell-text-soft)] text-[1.25rem] mr-1" name="material-symbols:copyright-outline-rounded" ></Icon>
+                <div class="text-[var(--shell-text-soft)] text-xs">{siteConfig.banner.credit.text}</div>
                 <Icon class:list={["transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0",
                     {"group-hover:opacity-100": hasBannerLink}]}
                       name="fa6-solid:arrow-up-right-from-square">
                 </Icon>
             </a>}
 
-
-            <SideBar class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem] onload-animation" headings={headings}></SideBar>
-
-            <main id="swup-container" class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden">
+        <div id="main-grid" class="transition duration-700 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
+            <main id="swup-container" class="transition-swup-fade order-1 min-w-0 overflow-hidden">
                 <div id="content-wrapper" class="onload-animation">
-                    <!-- the overflow-hidden here prevent long text break the layout-->
-                    <!-- make id different from windows.swup global property -->
                     <slot></slot>
-                    <div class="footer col-span-2 onload-animation hidden lg:block">
-                        <Footer></Footer>
-                    </div>
                 </div>
             </main>
 
-            <div class="footer col-span-2 onload-animation block lg:hidden">
+            <aside class="order-2">
+                <div class="lg:sticky lg:top-28">
+                    <SideBar
+                        class="mb-4 onload-animation"
+                        headings={headings}
+                        home={true}
+                        showProfile={false}
+                    ></SideBar>
+                </div>
+            </aside>
+
+            <div class="footer order-3 onload-animation lg:col-span-2">
                 <Footer></Footer>
             </div>
         </div>

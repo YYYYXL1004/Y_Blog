@@ -15,17 +15,17 @@ const quoteChars = Array.from(quote);
 	class="relative isolate min-h-[100svh] overflow-hidden"
 	style={`background-image: url(${url(image)});`}
 >
-	<div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(120,198,255,0.24),transparent_34%)]"></div>
-	<div class="absolute inset-0 bg-black/[0.12]"></div>
-	<div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,9,18,0.03)_0%,rgba(4,9,18,0.12)_48%,rgba(4,9,18,0.48)_100%)]"></div>
+	<div class="home-hero-orb absolute inset-0"></div>
+	<div class="home-hero-overlay absolute inset-0"></div>
+	<div class="home-hero-gradient absolute inset-0"></div>
 
-	<div class="relative z-10 mx-auto flex min-h-[100svh] max-w-[var(--page-width)] items-center justify-center px-6 py-28 md:px-8">
+	<div class="relative z-10 mx-auto flex min-h-[100svh] max-w-[var(--page-width)] items-center justify-center px-4 py-24 sm:px-6 sm:py-28 md:px-8">
 		<p
 			aria-label={quote}
-			class="max-w-4xl text-balance text-center text-3xl font-semibold leading-[1.8] tracking-[0.12em] text-white/[0.94] drop-shadow-[0_12px_36px_rgba(0,0,0,0.26)] sm:text-4xl md:text-5xl md:leading-[1.9]"
+			class="home-hero-quote max-w-4xl text-balance text-center text-2xl font-semibold leading-[1.65] tracking-[0.08em] sm:text-4xl sm:leading-[1.8] sm:tracking-[0.12em] md:text-5xl md:leading-[1.9]"
 		>
 			<span class="sr-only">{quote}</span>
-			<span aria-hidden="true" class="inline-flex flex-wrap justify-center gap-x-[0.08em] gap-y-[0.16em]">
+			<span aria-hidden="true" class="inline-flex flex-wrap justify-center gap-x-[0.04em] gap-y-[0.12em] sm:gap-x-[0.08em] sm:gap-y-[0.16em]">
 				{quoteChars.map((char, index) => (
 					<span
 						class="hero-quote-char inline-block"
@@ -88,5 +88,39 @@ const quoteChars = Array.from(quote);
 			filter: none;
 			animation: none;
 		}
+	}
+
+	.home-hero-orb {
+		background: radial-gradient(circle at top left, rgba(110, 190, 255, 0.18), transparent 36%);
+	}
+
+	.home-hero-overlay {
+		background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.12) 36%, rgba(9, 16, 30, 0.18) 100%);
+	}
+
+	.home-hero-gradient {
+		background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(18, 30, 52, 0.1) 52%, rgba(18, 30, 52, 0.3) 100%);
+	}
+
+	.home-hero-quote {
+		color: rgba(255, 255, 255, 0.96);
+		text-shadow: 0 12px 34px rgba(15, 23, 42, 0.18), 0 1px 0 rgba(15, 23, 42, 0.18);
+	}
+
+	:root.dark .home-hero-orb {
+		background: radial-gradient(circle at top left, rgba(120, 198, 255, 0.24), transparent 34%);
+	}
+
+	:root.dark .home-hero-overlay {
+		background: rgba(0, 0, 0, 0.12);
+	}
+
+	:root.dark .home-hero-gradient {
+		background: linear-gradient(180deg, rgba(10, 16, 28, 0.03) 0%, rgba(10, 16, 28, 0.12) 48%, rgba(10, 16, 28, 0.48) 100%);
+	}
+
+	:root.dark .home-hero-quote {
+		color: rgba(255, 255, 255, 0.94);
+		text-shadow: 0 12px 36px rgba(0, 0, 0, 0.26);
 	}
 </style>
