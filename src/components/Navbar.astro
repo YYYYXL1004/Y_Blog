@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import { navBarConfig, siteConfig } from "../config";
+import { navBarConfig, profileConfig, siteConfig } from "../config";
 import { LinkPresets } from "../constants/link-presets";
 import { LinkPreset, type NavBarLink } from "../types/config";
 import { url } from "../utils/url-utils";
@@ -9,9 +9,15 @@ import Search from "./Search.svelte";
 import DisplaySettings from "./widget/DisplaySettings.svelte";
 import NavMenuPanel from "./widget/NavMenuPanel.astro";
 
-const className = Astro.props.class;
+interface Props {
+	class?: string;
+	floating?: boolean;
+}
 
-let links: NavBarLink[] = navBarConfig.links.map(
+const className = Astro.props.class;
+const floating = Astro.props.floating ?? false;
+
+const links: NavBarLink[] = navBarConfig.links.map(
 	(item: NavBarLink | LinkPreset): NavBarLink => {
 		if (typeof item === "number") {
 			return LinkPresets[item];
@@ -20,68 +26,113 @@ let links: NavBarLink[] = navBarConfig.links.map(
 	},
 );
 ---
-<div id="navbar" class="z-50 onload-animation">
-    <div class="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div> <!-- used for onload animation -->
-    <div class:list={[
-        className,
-        "card-base !overflow-visible max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto flex items-center justify-between px-4"]}>
-        <a href={url('/')} class="btn-plain scale-animation rounded-lg h-[3.25rem] px-5 font-bold active:scale-95">
-            <div class="flex flex-row text-[var(--primary)] items-center text-md">
-                <Icon name="material-symbols:home-outline-rounded" class="text-[1.75rem] mb-1 mr-2" />
-                {siteConfig.title}
-            </div>
-        </a>
-        <div class="hidden md:flex">
-            {links.map((l) => {
-                return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
-                          class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"
-                >
-                    <div class="flex items-center">
-                        {l.name}
-                        {l.external && <Icon name="fa6-solid:arrow-up-right-from-square" class="text-[0.875rem] transition -translate-y-[1px] ml-1 text-black/[0.2] dark:text-white/[0.2]"></Icon>}
+
+<div id="navbar" class:list={["z-50 onload-animation relative", { "home-navbar": floating }]} data-floating={floating ? "true" : "false"}>
+    {!floating && <div class="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div>}
+
+    <div
+        data-navbar-surface
+        data-scrolled="false"
+        class:list={[
+            className,
+            floating
+                ? "home-nav-surface mx-auto flex min-h-[4.5rem] items-center justify-between gap-3 rounded-[2rem] border border-white/[0.16] bg-black/[0.18] px-3 py-3 shadow-[0_18px_60px_rgba(0,0,0,0.18)] backdrop-blur-md"
+                : "card-base !overflow-visible max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto flex items-center justify-between px-4",
+        ]}
+    >
+        <a
+            href={url("/")}
+            class:list={[
+                "rounded-full active:scale-95",
+                floating
+                    ? "inline-flex items-center gap-3 px-2 py-1.5 text-white transition hover:text-white"
+                    : "btn-plain scale-animation rounded-lg h-[3.25rem] px-5 font-bold",
+            ]}
+        >
+            {floating ? (
+                <>
+                    <img src={url(profileConfig.avatar || "/images/avatar-y.svg")} alt={profileConfig.name} class="h-11 w-11 rounded-full border border-white/15 object-cover shadow-[0_0_0_3px_rgba(255,255,255,0.04)]" />
+                    <div class="hidden min-w-0 md:block">
+                        <div class="truncate text-sm font-semibold tracking-[0.16em] text-white/[0.86]">
+                            {profileConfig.name}
+                        </div>
+                        <div class="truncate text-[0.68rem] uppercase tracking-[0.26em] text-white/[0.72]">
+                            {siteConfig.subtitle}
+                        </div>
                     </div>
-                </a>;
+                </>
+            ) : (
+                <div class="flex flex-row text-[var(--primary)] items-center text-md">
+                    <Icon name="material-symbols:home-outline-rounded" class="text-[1.75rem] mb-1 mr-2" />
+                    {siteConfig.title}
+                </div>
+            )}
+        </a>
+
+        <div class:list={[
+            "hidden md:flex items-center",
+            {
+                "gap-1 lg:gap-2": floating,
+            },
+        ]}>
+            {links.map((l) => {
+                return (
+                    <a
+                        aria-label={l.name}
+                        href={l.external ? l.url : url(l.url)}
+                        target={l.external ? "_blank" : null}
+                        class:list={[
+                            floating
+                                ? "rounded-full px-4 py-2 text-sm font-semibold text-white/[0.92] transition hover:bg-white/[0.12] hover:text-white active:scale-95"
+                                : "btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95",
+                        ]}
+                    >
+                        <div class="flex items-center">
+                            {l.name}
+                            {l.external && (
+                                <Icon
+                                    name="fa6-solid:arrow-up-right-from-square"
+                                    class="text-[0.875rem] transition -translate-y-[1px] ml-1 text-black/[0.2] dark:text-white/[0.2]"
+                                ></Icon>
+                            )}
+                        </div>
+                    </a>
+                );
             })}
         </div>
-        <div class="flex">
-            <!--<SearchPanel client:load>-->
+
+        <div class="flex items-center">
             <Search client:only="svelte"></Search>
-            {!siteConfig.themeColor.fixed && (
-                    <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch">
-                        <Icon name="material-symbols:palette-outline" class="text-[1.25rem]"></Icon>
-                    </button>
+            {!siteConfig.themeColor.fixed && !floating && (
+                <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch">
+                    <Icon name="material-symbols:palette-outline" class="text-[1.25rem]"></Icon>
+                </button>
             )}
             {/* astro check mis-types this Svelte client directive; build/runtime are valid */}
             {/* @ts-expect-error astro client directive typing */}
             <LightDarkSwitch client:only="svelte"></LightDarkSwitch>
-            <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden" id="nav-menu-switch">
+            <button
+                aria-label="Menu"
+                name="Nav Menu"
+                class:list={[
+                    floating
+                        ? "rounded-full text-white transition hover:bg-white/[0.12] hover:text-white active:scale-90"
+                        : "btn-plain scale-animation rounded-lg active:scale-90",
+                    "w-11 h-11 md:!hidden",
+                ]}
+                id="nav-menu-switch"
+            >
                 <Icon name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
             </button>
         </div>
+
         <NavMenuPanel links={links}></NavMenuPanel>
-        <DisplaySettings client:only="svelte"></DisplaySettings>
+        {!siteConfig.themeColor.fixed && !floating && <DisplaySettings client:only="svelte"></DisplaySettings>}
     </div>
 </div>
 
 <script>
-function switchTheme() {
-    if (localStorage.theme === 'dark') {
-        document.documentElement.classList.remove('dark');
-        localStorage.theme = 'light';
-    } else {
-        document.documentElement.classList.add('dark');
-        localStorage.theme = 'dark';
-    }
-}
-
 function loadButtonScript() {
-    let switchBtn = document.getElementById("scheme-switch");
-    if (switchBtn) {
-        switchBtn.onclick = function () {
-            switchTheme()
-        };
-    }
-
     let settingBtn = document.getElementById("display-settings-switch");
     if (settingBtn) {
         settingBtn.onclick = function () {
@@ -103,7 +154,23 @@ function loadButtonScript() {
     }
 }
 
+function syncFloatingNavbar() {
+    const navbar = document.querySelector('#navbar[data-floating="true"] [data-navbar-surface]');
+    if (!(navbar instanceof HTMLElement)) {
+        return;
+    }
+    const threshold = Math.max(72, window.innerHeight * 0.12);
+    navbar.dataset.scrolled = window.scrollY > threshold ? "true" : "false";
+}
+
+if (!document.documentElement.dataset.yyxlFloatingNavbarBound) {
+    window.addEventListener("scroll", syncFloatingNavbar, { passive: true });
+    window.addEventListener("resize", syncFloatingNavbar);
+    document.documentElement.dataset.yyxlFloatingNavbarBound = "true";
+}
+
 loadButtonScript();
+syncFloatingNavbar();
 </script>
 
 {import.meta.env.PROD && <script is:inline define:vars={{scriptUrl: url('/pagefind/pagefind.js')}}>

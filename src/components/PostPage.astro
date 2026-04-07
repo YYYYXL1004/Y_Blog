@@ -1,28 +1,53 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { getPostUrlBySlug } from "@utils/url-utils";
+import FeaturedPostCard from "./home/FeaturedPostCard.astro";
 import PostCard from "./PostCard.astro";
 
-const { page } = Astro.props;
+interface Props {
+	page: {
+		data: CollectionEntry<"posts">[];
+	};
+	featured?: boolean;
+}
+
+const { page, featured = false } = Astro.props;
 
 let delay = 0;
 const interval = 50;
+
+const [firstPost, ...restPosts] = page.data;
+const remainingPosts = featured ? restPosts : page.data;
 ---
-<div class="transition flex flex-col rounded-[var(--radius-large)] bg-[var(--card-bg)] py-1 md:py-0 md:bg-transparent md:gap-4 mb-4">
-    {page.data.map((entry: CollectionEntry<"posts">) => (
-        <PostCard
-                entry={entry}
-                title={entry.data.title}
-                tags={entry.data.tags}
-                category={entry.data.category}
-                published={entry.data.published}
-                updated={entry.data.updated}
-                url={getPostUrlBySlug(entry.slug)}
-                image={entry.data.image}
-                description={entry.data.description}
-                draft={entry.data.draft}
-                class:list="onload-animation"
-                style={`animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);`}
-        ></PostCard>
-    ))}
+
+<div class="flex flex-col gap-4 md:gap-5">
+	{featured && firstPost && (
+		<FeaturedPostCard
+			entry={firstPost}
+			title={firstPost.data.title}
+			tags={firstPost.data.tags}
+			category={firstPost.data.category}
+			published={firstPost.data.published}
+			updated={firstPost.data.updated}
+			url={getPostUrlBySlug(firstPost.slug)}
+			description={firstPost.data.description}
+		/>
+	)}
+
+	{remainingPosts.map((entry: CollectionEntry<"posts">) => (
+		<PostCard
+			entry={entry}
+			title={entry.data.title}
+			tags={entry.data.tags}
+			category={entry.data.category}
+			published={entry.data.published}
+			updated={entry.data.updated}
+			url={getPostUrlBySlug(entry.slug)}
+			image={entry.data.image}
+			description={entry.data.description}
+			draft={entry.data.draft}
+			class:list="onload-animation"
+			style={`animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);`}
+		></PostCard>
+	))}
 </div>

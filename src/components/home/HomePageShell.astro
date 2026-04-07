@@ -1,0 +1,70 @@
+---
+import type { Page } from "astro";
+import { homePageConfig, siteConfig } from "../../config";
+import Footer from "../Footer.astro";
+import Navbar from "../Navbar.astro";
+import Pagination from "../control/Pagination.astro";
+import BackToTop from "../control/BackToTop.astro";
+import PostPage from "../PostPage.astro";
+import SideBar from "../widget/SideBar.astro";
+import Layout from "../../layouts/Layout.astro";
+import HomeHero from "./HomeHero.astro";
+
+interface Props {
+	page: Page;
+}
+
+const { page } = Astro.props;
+---
+
+<Layout>
+	<div class="relative min-h-screen overflow-x-clip">
+		<div
+			id="top-row"
+			class="pointer-events-none fixed inset-x-0 top-0 z-50"
+		>
+			<div
+				id="navbar-wrapper"
+				class="pointer-events-auto mx-auto max-w-[var(--page-width)] px-4 pt-4 transition-all md:px-6 md:pt-6"
+			>
+				<Navbar floating={true}></Navbar>
+			</div>
+		</div>
+
+		<HomeHero
+			image={homePageConfig.heroImage}
+		/>
+
+		<section id="home-feed" class="relative z-30 -mt-16 px-4 pb-14 md:-mt-20 md:px-6 md:pb-16 lg:-mt-24 lg:pb-20">
+			<div class="mx-auto max-w-[var(--page-width)]">
+				<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
+					<div class="flex min-w-0 flex-col gap-6">
+						<div class="home-feed-heading mb-1 flex items-center justify-between gap-4 px-1 text-sm uppercase tracking-[0.28em]">
+							<span>最近更新</span>
+							<span class="hidden sm:inline">{siteConfig.subtitle}</span>
+						</div>
+
+						<PostPage page={page} featured={true}></PostPage>
+						<Pagination class="mx-auto" page={page}></Pagination>
+					</div>
+
+					<aside class="hidden lg:block">
+						<div class="sticky top-24">
+							<SideBar home={true}></SideBar>
+						</div>
+					</aside>
+				</div>
+
+				<div class="mt-6 lg:hidden">
+					<SideBar home={true}></SideBar>
+				</div>
+
+				<div class="mt-10">
+					<Footer></Footer>
+				</div>
+			</div>
+
+			<BackToTop></BackToTop>
+		</section>
+	</div>
+</Layout>
